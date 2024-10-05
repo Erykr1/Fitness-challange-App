@@ -1,0 +1,85 @@
+﻿@page
+@model MyApp.Namespace.HomeModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login ve Register Sayfası</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+</head>
+<body>
+    @if (TempData["AlertMessage"] != null)
+    {
+        <div class="alert alert-@TempData["AlertType"] alert-dismissible fade show" role="alert">
+            @TempData["AlertMessage"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+    <div class="container mt-5">
+       <div class="pull-right" style="margin-left: 63% !important; margin-bottom: 10px;">
+            Difficulty: 
+            <a href="?difficultyFilter=all" class="btn btn-small btn-primary">
+                All
+            </a>
+            <a href="?difficultyFilter=0" class="btn btn-small btn-primary">
+                Easy
+            </a>
+            <a href="?difficultyFilter=1" class="btn btn-small btn-primary">
+                Medium
+            </a>
+            <a href="?difficultyFilter=2" class="btn btn-small btn-primary">
+                Hard
+            </a>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-6" style="display: contents;">
+                @foreach (var sport in Model.Sports)
+                {
+                    <div class="card" style="width: 18rem; margin:7px;">
+                        <img class="card-img-top" src="images/@(sport.Name.ToLowerInvariant()).jpg" alt="@sport.Name">
+                        <div class="card-body">
+                            <h5 class="card-title">@sport.Name</h5>
+                            @if (Model.SportUserEmails.ContainsKey(sport.Id) && Model.SportUserEmails[sport.Id].Any())
+                            {
+                                <p class="card-text">Joined Users:</p>
+                                <ul>
+                                    @foreach (var email in Model.SportUserEmails[sport.Id])
+                                    {
+                                        <li>@email</li>
+                                    }
+                                </ul>
+                            }
+                            else
+                            {
+                                <p class="card-text">No users joined yet.</p>
+                            }
+                            @if (sport.IsActive == "1")
+                            {
+                                <form method="post">
+                                    <input type="hidden" name="sportId" value="@sport.Id" />
+                                    <button type="submit" asp-page-handler="JoinSport" class="btn btn-primary">Join</button>
+                                </form>
+                                <p class="card-text">Difficulty: @(sport.Difficulty == "0" ? "Easy" : sport.Difficulty == "1" ? "Medium" : "Hard")</p>
+                            }
+                            else
+                            {
+                                <button class="btn btn-danger" disabled>Not Available</button>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
